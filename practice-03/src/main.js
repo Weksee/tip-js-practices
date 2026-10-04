@@ -30,11 +30,55 @@ function renderApp() {
 }
 
 function handleTaskListClick(event) {
-  // TODO: найти кнопку через closest(), проверить её принадлежность списку.
-  // TODO: распознать toggle/delete; прочитать и проверить числовой id карточки.
-  // TODO: вызвать функцию ПР2, разобрать ok/error, сохранить успешный результат.
-  // TODO: renderApp(), затем restoreTaskFocus(id, action).
-  throw new Error("Не реализовано: handleTaskListClick");
+  // 1. Убедиться, что цель — элемент (может быть текстовый узел).
+  if (!(event.target instanceof Element)) return;
+
+  // 2. Найти ближайшую кнопку с data-action.
+  const button = event.target.closest("button[data-action]");
+  if (!button || !elements.list.contains(button)) return;
+
+  // 3. Распознать действие.
+  const action = button.dataset.action;
+  if (action !== "toggle" && action !== "delete") return;
+
+  // 4. Найти карточку и её id.
+  const card = button.closest("li[data-task-id]");
+  if (!card) return;
+
+  const rawId = card.dataset.taskId;
+  const id = Number(rawId);
+
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    elements.message.textContent = `Ошибка: некорректный id задачи "${rawId}"`;
+    return;
+  }
+
+  // 5. Найти актуальную задачу.
+  const task = findTaskById(currentTasks, id);
+  if (!task) {
+    elements.message.textContent = `Ошибка: задача с id ${id} не найдена`;
+    return;
+  }
+
+  // 6. Вызвать функцию ПР2.
+  let result;
+  if (action === "toggle") {
+    result = setTaskCompleted(currentTasks, id, !task.completed);
+  } else {
+    result = removeTask(currentTasks, id);
+  }
+
+  // 7. Обработать результат.
+  if (!result.ok) {
+    elements.message.textContent = `Ошибка: ${result.error}`;
+    return;
+  }
+
+  // 8. Успех: обновить состояние, очистить сообщение, перерисовать.
+  currentTasks = result.tasks;
+  elements.message.textContent = "";
+  renderApp();
+  restoreTaskFocus(id, action);
 }
 
 function handleFilterClick(event) {
