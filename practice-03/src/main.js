@@ -24,9 +24,19 @@ elements.datasetLabel.textContent = isVariant
   : "Общий контрольный набор";
 
 function renderApp() {
-  // ВРЕМЕННАЯ версия для проверки задания 2.
-  // В задании 4 будет полная реализация.
-  renderTaskList(elements.list, currentTasks);
+  const visibleTasks = getVisibleTasks(currentTasks, currentFilter);
+
+  renderTaskList(elements.list, visibleTasks);
+  renderSummary(elements.summary, currentTasks, visibleTasks.length);
+  renderEmptyState(elements.empty, currentTasks.length, visibleTasks.length);
+
+  // Обновить активную кнопку фильтра.
+  const filterButtons = elements.filters.querySelectorAll("button[data-filter]");
+  for (const btn of filterButtons) {
+    const isActive = btn.dataset.filter === currentFilter;
+    btn.classList.toggle("is-active", isActive);
+    btn.setAttribute("aria-pressed", String(isActive));
+  }
 }
 
 function handleTaskListClick(event) {
@@ -82,9 +92,17 @@ function handleTaskListClick(event) {
 }
 
 function handleFilterClick(event) {
-  // TODO: найти кнопку фильтра, проверить all/pending/completed.
-  // TODO: изменить только currentFilter, очистить сообщение и вызвать renderApp().
-  throw new Error("Не реализовано: handleFilterClick");
+  if (!(event.target instanceof Element)) return;
+
+  const button = event.target.closest("button[data-filter]");
+  if (!button || !elements.filters.contains(button)) return;
+
+  const filter = button.dataset.filter;
+  if (filter !== "all" && filter !== "pending" && filter !== "completed") return;
+
+  currentFilter = filter;
+  elements.message.textContent = "";
+  renderApp();
 }
 
 // Готовая вспомогательная функция. Сохраняет понятную позицию клавиатурного фокуса

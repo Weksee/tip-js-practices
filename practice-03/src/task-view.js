@@ -76,13 +76,32 @@ export function renderTaskList(listElement, tasks) {
 }
 
 export function renderSummary(summaryElement, tasks, visibleCount) {
-  // TODO: реализуем в задании 4.
-  // getTaskStats(tasks) — сводка по всему массиву.
-  // visibleCount — длина отфильтрованного списка.
-  throw new Error("Не реализовано: renderSummary");
+  const { total, completed, pending, progress } = getTaskStats(tasks);
+
+  const totalEl = summaryElement.querySelector('[data-stat="total"]');
+  const completedEl = summaryElement.querySelector('[data-stat="completed"]');
+  const pendingEl = summaryElement.querySelector('[data-stat="pending"]');
+  const progressEl = summaryElement.querySelector('[data-stat="progress"]');
+  const visibleEl = summaryElement.querySelector('[data-stat="visible"]');
+
+  if (totalEl) totalEl.textContent = String(total);
+  if (completedEl) completedEl.textContent = String(completed);
+  if (pendingEl) pendingEl.textContent = String(pending);
+  if (progressEl) progressEl.textContent = `${progress.toFixed(1)}%`;
+  if (visibleEl) visibleEl.textContent = String(visibleCount);
 }
 
 export function renderEmptyState(messageElement, total, visibleCount) {
-  // TODO: реализуем в задании 4.
-  throw new Error("Не реализовано: renderEmptyState");
+  if (visibleCount > 0) {
+    messageElement.textContent = "";
+    messageElement.hidden = true;
+    return;
+  }
+
+  if (total === 0) {
+    messageElement.textContent = "Список задач пуст.";
+  } else {
+    messageElement.textContent = "Нет задач по выбранному фильтру.";
+  }
+  messageElement.hidden = false;
 }
