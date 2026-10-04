@@ -24,10 +24,9 @@ elements.datasetLabel.textContent = isVariant
   : "Общий контрольный набор";
 
 function renderApp() {
-  // TODO: отобрать видимые задачи; обновить список, общую сводку и пустое состояние.
-  // TODO: для кнопок фильтра обновить is-active и aria-pressed.
-  // Не изменять currentTasks и не добавлять обработчики событий в этой функции.
-  throw new Error("Не реализовано: renderApp");
+  // ВРЕМЕННАЯ версия для проверки задания 2.
+  // В задании 4 будет полная реализация.
+  renderTaskList(elements.list, currentTasks);
 }
 
 function handleTaskListClick(event) {
